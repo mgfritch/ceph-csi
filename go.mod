@@ -45,6 +45,7 @@ require (
 	k8s.io/pod-security-admission v0.0.0
 	k8s.io/utils v0.0.0-20221128185143-99ec85e7a448
 	sigs.k8s.io/controller-runtime v0.14.4
+	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4
 )
 
 require (
