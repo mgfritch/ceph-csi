@@ -74,6 +74,9 @@ func getPassphrase(ctx context.Context, encryption util.VolumeEncryption, volID 
 		err        error
 	)
 
+	log.ErrorLog(ctx, "mgfritch: getPassphrase VolumeEncryption: %+v", encryption)
+	log.ErrorLog(ctx, "mgfritch: getPassphrase DEKStoreType: %v", encryption.KMS.RequiresDEKStore())
+
 	switch encryption.KMS.RequiresDEKStore() {
 	case kms.DEKStoreIntegrated:
 		passphrase, err = encryption.GetCryptoPassphrase(volID)
@@ -91,6 +94,7 @@ func getPassphrase(ctx context.Context, encryption util.VolumeEncryption, volID 
 		}
 	}
 
+	log.ErrorLog(ctx, "mgfritch: getPassphrase returned: %v", passphrase)
 	return passphrase, nil
 }
 
@@ -115,9 +119,12 @@ func createKeyFuncFromVolumeEncryption(
 		if keySize < 0 {
 			keySize = len(passphrase)
 		}
+		log.ErrorLog(ctx, "mgfritch: keySize: %v", keySize)
 		key, err := fscryptcrypto.NewBlankKey(keySize)
 		copy(key.Data(), passphrase)
 
+		log.ErrorLog(ctx, "mgfritch: keyFn returned: %+v", key)
+		log.ErrorLog(ctx, "mgfritch: key: %s", key.Data())
 		return key, err
 	}
 
@@ -148,6 +155,8 @@ func unlockExisting(
 	keyFn func(fscryptactions.ProtectorInfo, bool) (*fscryptcrypto.Key, error),
 ) error {
 	var err error
+
+	log.ErrorLog(ctx, "mgfritch: unlockExisting(..., ..., %v, ...)", encryptedPath)
 
 	policy, err := fscryptactions.GetPolicyFromPath(fscryptContext, encryptedPath)
 	if err != nil {
@@ -205,6 +214,8 @@ func initializeAndUnlock(
 ) error {
 	var owner *user.User
 	var err error
+
+	log.ErrorLog(ctx, "mgfritch: initializeAndUnlock(..., ..., %v, ...)", encryptedPath)
 
 	if err = os.Mkdir(encryptedPath, 0o755); err != nil {
 		return err

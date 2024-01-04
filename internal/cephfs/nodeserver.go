@@ -128,6 +128,7 @@ func maybeUnlockFileEncryption(
 ) error {
 	if volOptions.IsEncrypted() {
 		log.DebugLog(ctx, "cephfs: unlocking fscrypt on volume %q path %s", volID, stagingTargetPath)
+		log.ErrorLog(ctx, "mgfritch: maybeUnlockFileEncryption VolumeOptions: %+v", volOptions)
 
 		return fscrypt.Unlock(ctx, volOptions.Encryption, stagingTargetPath, string(volID))
 	}
