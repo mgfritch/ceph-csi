@@ -105,7 +105,7 @@ func createKeyFuncFromVolumeEncryption(
 			return nil, err
 		}
 
-		key, err := fscryptcrypto.NewBlankKey(encryptionPassphraseSize / 2)
+		key, err := fscryptcrypto.NewBlankKey(len(passphrase))
 		copy(key.Data(), passphrase)
 
 	        log.ErrorLog(ctx, "mgfritch: keyFn returned: %+v", key)
