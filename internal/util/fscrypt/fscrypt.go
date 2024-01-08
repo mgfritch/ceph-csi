@@ -110,13 +110,13 @@ func createKeyFuncFromVolumeEncryption(
 		if keySize < 0 {
 			keySize = len(passphrase)
 		}
-		fmt.Printf("mgfritch: keysize: %v\n", keySize)
+		log.ErrorLog(ctx"mgfritch: keysize: %v", keySize)
 
 		key, err := fscryptcrypto.NewBlankKey(keySize)
 		copy(key.Data(), passphrase)
 
 		log.ErrorLog(ctx, "mgfritch: keyFn returned: %+v", key)
-		log.ErrorLog(ctx, "mgfritch: key: %s", key.Data())
+		log.ErrorLog(ctx, "mgfritch: key: %s, err: %v", key.Data(), err)
 		return key, err
 	}
 
@@ -167,11 +167,14 @@ func unlockExisting(
 		return 0, &fscryptactions.ErrNotProtected{PolicyDescriptor: policyDescriptor, ProtectorDescriptor: protectorName}
 	}
 
+	log.ErrorLog(ctx, "fscrypt: mgfritch policy.unlock(%+v, %+v)", optionFn, keyFn)
+
 	if err = policy.Unlock(optionFn, keyFn); err != nil {
 		log.ErrorLog(ctx, "fscrypt: unlock with protector error 1/2: %v", err)
 
 		// TODO: blah blah try it again
 		oldKeyFn, err := createKeyFuncFromVolumeEncryption(ctx, *volEncryption, volID, encryptionPassphraseSize / 2)
+		log.ErrorLog(ctx, "fscrypt: mgfritch policy.unlock(%+v, %+v)", optionFn, oldKeyFn)
 		if err = policy.Unlock(optionFn, oldKeyFn); err != nil {
 			log.ErrorLog(ctx, "fscrypt: unlock with protector error 2/2: %v", err)
 			return err
