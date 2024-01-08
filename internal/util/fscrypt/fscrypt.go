@@ -167,11 +167,14 @@ func unlockExisting(
 		return 0, &fscryptactions.ErrNotProtected{PolicyDescriptor: policyDescriptor, ProtectorDescriptor: protectorName}
 	}
 
+	log.ErrorLog(ctx, "fscrypt: mgfritch policy.unlock(%+v, %+v)", optionFn, keyFn)
+
 	if err = policy.Unlock(optionFn, keyFn); err != nil {
 		log.ErrorLog(ctx, "fscrypt: unlock with protector error 1/2: %v", err)
 
 		// TODO: blah blah try it again
 		oldKeyFn, err := createKeyFuncFromVolumeEncryption(ctx, *volEncryption, volID, encryptionPassphraseSize / 2)
+		log.ErrorLog(ctx, "fscrypt: mgfritch policy.unlock(%+v, %+v)", optionFn, oldKeyFn)
 		if err = policy.Unlock(optionFn, oldKeyFn); err != nil {
 			log.ErrorLog(ctx, "fscrypt: unlock with protector error 2/2: %v", err)
 			return err
