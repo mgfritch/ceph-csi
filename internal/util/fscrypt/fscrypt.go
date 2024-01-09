@@ -58,6 +58,11 @@ var policyV2Support = []util.KernelVersion{
 	},
 }
 
+// error values
+var (
+	ErrBadAuth      = errors.New("key authentication check failed")
+)
+
 func AppendEncyptedSubdirectory(dir string) string {
 	return path.Join(dir, FscryptSubdir)
 }
@@ -98,6 +103,10 @@ func createKeyFuncFromVolumeEncryption(
 	keySize int,
 ) (func(fscryptactions.ProtectorInfo, bool) (*fscryptcrypto.Key, error), error) {
 	keyFunc := func(info fscryptactions.ProtectorInfo, retry bool) (*fscryptcrypto.Key, error) {
+		if retry {
+			return nil, ErrBadAuth
+		}
+
 		passphrase, err := getPassphrase(ctx, encryption, volID)
 		if err != nil {
 			return nil, err
