@@ -169,25 +169,31 @@ func unlockExisting(
 
 	log.ErrorLog(ctx, "fscrypt: mgfritch policy.unlock(%+v, %+v)", optionFn, keyFn)
 
-	if err = policy.Unlock(optionFn, keyFn); err != nil {
+	err = policy.Unlock(optionFn, keyFn)
+	log.ErrorLog(ctx, "fscrypt: mgfritch policy.Unlock returned: %+v", err)
+	if err != nil {
 		log.ErrorLog(ctx, "fscrypt: unlock with protector error 1/2: %v", err)
 
 		// TODO: blah blah try it again
 		oldKeyFn, err := createKeyFuncFromVolumeEncryption(ctx, *volEncryption, volID, encryptionPassphraseSize / 2)
 		log.ErrorLog(ctx, "fscrypt: mgfritch policy.unlock(%+v, %+v)", optionFn, oldKeyFn)
-		if err = policy.Unlock(optionFn, oldKeyFn); err != nil {
+		err = policy.Unlock(optionFn, oldKeyFn)
+		if err != nil {
 			log.ErrorLog(ctx, "fscrypt: unlock with protector error 2/2: %v", err)
 			return err
 		}
 	}
+	log.ErrorLog(ctx, "fscrypt: mgfritch WTF!") 
 
 	defer func() {
+	        log.ErrorLog(ctx, "fscrypt: mgfritch policy.Lock()")
 		err = policy.Lock()
 		if err != nil {
 			log.ErrorLog(ctx, "fscrypt: failed to lock policy after use: %v", err)
 		}
 	}()
 
+	log.ErrorLog(ctx, "fscrypt: mgfritch policy.Provision()")
 	if err = policy.Provision(); err != nil {
 		log.ErrorLog(ctx, "fscrypt: provision fail %v", err)
 
@@ -196,6 +202,7 @@ func unlockExisting(
 
 	log.DebugLog(ctx, "fscrypt protector unlock: %s %+v", protectorName, policy)
 
+	log.ErrorLog(ctx, "fscrypt: mgfritch DONE!~")
 	return nil
 }
 
