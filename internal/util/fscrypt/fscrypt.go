@@ -375,7 +375,7 @@ func Unlock(
 		return err
 	}
 
-	// A proper set up fscrypy directory requires metadata and a kernel policy:
+	// A proper set up fscrypt directory requires metadata and a kernel policy:
 
 	// 1. Do we have a metadata directory (.fscrypt) set up?
 	metadataDirExists := false
