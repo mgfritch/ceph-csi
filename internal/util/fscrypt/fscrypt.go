@@ -107,8 +107,12 @@ func createKeyFuncFromVolumeEncryption(
 			return nil, err
 		}
 
+                log.ErrorLog(ctx, "mgfritch: retry=%v", retry)
 		if keySize < 0 {
 			keySize = len(passphrase)
+		}
+		if retry {
+			keySize = encryptionPassphraseSize / 2 
 		}
 		log.ErrorLog(ctx, "mgfritch: keysize: %v", keySize)
 
